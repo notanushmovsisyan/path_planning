@@ -136,9 +136,33 @@ def print_labyrinth(graph, width, height):
 
     for row in maze:
         print("".join(row))
+    print()
 
 
-if __name__ == "__main__":
-    graph, used_seed = generate(10, 5)
+def print_labyrinth_binary(graph, width, height):
+    maze_rows = 2 * height + 1
+    maze_cols = 2 * width + 1
+    maze = [[1] * maze_cols for _ in range(maze_rows)]
 
-    print_labyrinth(graph, 10, 6)
+    for y in range(height):
+        for x in range(width):
+            cell = (y, x)
+            cell_row, cell_col = 2 * y + 1, 2 * x + 1
+            maze[cell_row][cell_col] = 0
+
+            for ny, nx in graph.get(cell, []):
+                if ny == y and nx == x + 1:
+                    maze[cell_row][cell_col + 1] = 0
+                elif ny == y and nx == x - 1:
+                    maze[cell_row][cell_col - 1] = 0
+                elif ny == y + 1 and nx == x:
+                    maze[cell_row + 1][cell_col] = 0
+                elif ny == y - 1 and nx == x:
+                    maze[cell_row - 1][cell_col] = 0
+
+    maze[1][0] = 0
+    maze[2 * height - 1][2 * width] = 0
+
+    for row in maze:
+        print("".join(str(c) for c in row))
+    print()
