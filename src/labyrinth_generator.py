@@ -151,6 +151,38 @@ def print_labyrinth_as_garaph(graph):
         print(f"{node}: {graph[node]}")
 
 
+def print_path_on_maze(graph, path, width, height):
+    maze_rows = 2 * height + 1
+    maze_cols = 2 * width + 1
+    maze = [['█'] * maze_cols for _ in range(maze_rows)]
+
+    for y in range(height):
+        for x in range(width):
+            cell = (y, x)
+            cell_row, cell_col = 2 * y + 1, 2 * x + 1
+            maze[cell_row][cell_col] = ' '
+
+            for ny, nx in graph.get(cell, []):
+                if ny == y and nx == x + 1:
+                    maze[cell_row][cell_col + 1] = ' '
+                elif ny == y and nx == x - 1:
+                    maze[cell_row][cell_col - 1] = ' '
+                elif ny == y + 1 and nx == x:
+                    maze[cell_row + 1][cell_col] = ' '
+                elif ny == y - 1 and nx == x:
+                    maze[cell_row - 1][cell_col] = ' '
+
+    maze[1][0] = ' '  # entrance
+    maze[2 * height - 1][2 * width] = ' '  # exit
+
+    # Draw the path
+    for y, x in path:
+        maze[2 * y + 1][2 * x + 1] = '.'
+
+    for row in maze:
+        print("".join(row))
+
+
 if __name__ == "__main__":
     width = 5
     height = 6
