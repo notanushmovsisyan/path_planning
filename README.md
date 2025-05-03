@@ -27,3 +27,33 @@ graph, used_seed = generate(10, 5)
 
 # Print the maze
 print_labyrinth(graph, 10, 5)
+
+```
+
+## The A* Pathfinder Algorithm
+This project uses the A* (A-star) algorithm to find the shortest path through the generated maze. A* is a popular and efficient pathfinding algorithm widely used in navigation systems, games, and AI due to its performance and accuracy.
+
+### How to Use
+
+1. Generate a maze as stated in the previous section.
+2. **Find the path** by using the `pathfinder_algo(graph, width, height)` function.
+    - **graph**: The graph representation of the maze.
+    - **width**: The number of columns in the maze.
+    - **height**: The number of rows in the maze.
+3. **Visualize the maze with the path** with the function `print_path_on_maze(graph, path, width, height)`.
+
+#### Example Usage
+
+```python
+#generate a maze with width 10 and height 6
+width, height = 10, 6
+graph, seed = generate(width, height)
+
+#find path
+path = pathfinder_algo(graph, width, height)
+
+#visualize maze and path
+print_path_on_maze(graph, path, width, height)
+
+```
+
