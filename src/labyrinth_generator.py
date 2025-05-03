@@ -79,6 +79,7 @@ def step(state, finish=False):
 
 
 def generate(width, height, seed=None):
+    height -= 1
     if seed is None:
         seed = random.randint(0, 0xFFFFFFFF)
     random.seed(seed)
@@ -90,27 +91,33 @@ def generate(width, height, seed=None):
         state, row = step(state)
         for col_idx, cell in enumerate(row):
             node = (row_idx, col_idx)
-            graph[node] = []
+            graph.setdefault(node, [])
 
             if cell & E:
-                graph[node].append((row_idx, col_idx + 1))
+                neighbor = (row_idx, col_idx + 1)
+                graph[node].append(neighbor)
+                graph.setdefault(neighbor, []).append(node)  # Add reverse edge
+
             if cell & S:
-                graph[node].append((row_idx + 1, col_idx))
+                neighbor = (row_idx + 1, col_idx)
+                graph[node].append(neighbor)
+                graph.setdefault(neighbor, []).append(node)  # Add reverse edge
 
     # Final row
     state, row = step(state, finish=True)
     for col_idx, cell in enumerate(row):
         node = (height, col_idx)
-        graph[node] = []
+        graph.setdefault(node, [])
 
         if cell & E:
-            graph[node].append((height, col_idx + 1))
+            neighbor = (height, col_idx + 1)
+            graph[node].append(neighbor)
+            graph.setdefault(neighbor, []).append(node)  # Add reverse edge
 
     return graph, seed
 
 
 def print_labyrinth(graph, width, height):
-    height += 1
     maze_rows = 2 * height + 1
     maze_cols = 2 * width + 1
     maze = [['█'] * maze_cols for _ in range(maze_rows)]
@@ -146,7 +153,7 @@ def print_labyrinth_as_garaph(graph):
 
 if __name__ == "__main__":
     width = 5
-    height = 5
+    height = 6
 
     graph, used_seed = generate(width, height)
 
