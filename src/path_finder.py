@@ -58,6 +58,7 @@ def test_pathfinder():
         raise ValueError("Path does not end at exit!")
 
     print("✓ A* pathfinding test passed.")
+    print_path_on_maze(graph, path, width, height)
 
 
 if __name__ == "__main__":

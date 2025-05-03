@@ -79,6 +79,7 @@ def step(state, finish=False):
 
 
 def generate(width, height, seed=None):
+    height -= 1
     if seed is None:
         seed = random.randint(0, 0xFFFFFFFF)
     random.seed(seed)
@@ -90,21 +91,28 @@ def generate(width, height, seed=None):
         state, row = step(state)
         for col_idx, cell in enumerate(row):
             node = (row_idx, col_idx)
-            graph[node] = []
+            graph.setdefault(node, [])
 
             if cell & E:
-                graph[node].append((row_idx, col_idx + 1))
+                neighbor = (row_idx, col_idx + 1)
+                graph[node].append(neighbor)
+                graph.setdefault(neighbor, []).append(node)  # Add reverse edge
+
             if cell & S:
-                graph[node].append((row_idx + 1, col_idx))
+                neighbor = (row_idx + 1, col_idx)
+                graph[node].append(neighbor)
+                graph.setdefault(neighbor, []).append(node)  # Add reverse edge
 
     # Final row
     state, row = step(state, finish=True)
     for col_idx, cell in enumerate(row):
         node = (height, col_idx)
-        graph[node] = []
+        graph.setdefault(node, [])
 
         if cell & E:
-            graph[node].append((height, col_idx + 1))
+            neighbor = (height, col_idx + 1)
+            graph[node].append(neighbor)
+            graph.setdefault(neighbor, []).append(node)  # Add reverse edge
 
     return graph, seed
 
@@ -136,33 +144,50 @@ def print_labyrinth(graph, width, height):
 
     for row in maze:
         print("".join(row))
-    print()
 
 
-def print_labyrinth_binary(graph, width, height):
+def print_labyrinth_as_garaph(graph):
+    for node in sorted(graph):
+        print(f"{node}: {graph[node]}")
+
+
+def print_path_on_maze(graph, path, width, height):
     maze_rows = 2 * height + 1
     maze_cols = 2 * width + 1
-    maze = [[1] * maze_cols for _ in range(maze_rows)]
+    maze = [['█'] * maze_cols for _ in range(maze_rows)]
 
     for y in range(height):
         for x in range(width):
             cell = (y, x)
             cell_row, cell_col = 2 * y + 1, 2 * x + 1
-            maze[cell_row][cell_col] = 0
+            maze[cell_row][cell_col] = ' '
 
             for ny, nx in graph.get(cell, []):
                 if ny == y and nx == x + 1:
-                    maze[cell_row][cell_col + 1] = 0
+                    maze[cell_row][cell_col + 1] = ' '
                 elif ny == y and nx == x - 1:
-                    maze[cell_row][cell_col - 1] = 0
+                    maze[cell_row][cell_col - 1] = ' '
                 elif ny == y + 1 and nx == x:
-                    maze[cell_row + 1][cell_col] = 0
+                    maze[cell_row + 1][cell_col] = ' '
                 elif ny == y - 1 and nx == x:
-                    maze[cell_row - 1][cell_col] = 0
+                    maze[cell_row - 1][cell_col] = ' '
 
-    maze[1][0] = 0
-    maze[2 * height - 1][2 * width] = 0
+    maze[1][0] = ' '  # entrance
+    maze[2 * height - 1][2 * width] = ' '  # exit
+
+    # Draw the path
+    for y, x in path:
+        maze[2 * y + 1][2 * x + 1] = '.'
 
     for row in maze:
-        print("".join(str(c) for c in row))
-    print()
+        print("".join(row))
+
+
+if __name__ == "__main__":
+    width = 5
+    height = 6
+
+    graph, used_seed = generate(width, height)
+
+    print_labyrinth_as_garaph(graph)
+    print_labyrinth(graph, width, height)
