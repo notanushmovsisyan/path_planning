@@ -110,6 +110,7 @@ def generate(width, height, seed=None):
 
 
 def print_labyrinth(graph, width, height):
+    height += 1
     maze_rows = 2 * height + 1
     maze_cols = 2 * width + 1
     maze = [['█'] * maze_cols for _ in range(maze_rows)]
@@ -138,7 +139,16 @@ def print_labyrinth(graph, width, height):
         print("".join(row))
 
 
-if __name__ == "__main__":
-    graph, used_seed = generate(10, 5)
+def print_labyrinth_as_garaph(graph):
+    for node in sorted(graph):
+        print(f"{node}: {graph[node]}")
 
-    print_labyrinth(graph, 10, 6)
+
+if __name__ == "__main__":
+    width = 5
+    height = 5
+
+    graph, used_seed = generate(width, height)
+
+    print_labyrinth_as_garaph(graph)
+    print_labyrinth(graph, width, height)
