@@ -96,14 +96,14 @@ def generate(width, height, seed=None):
             if cell & E:
                 neighbor = (row_idx, col_idx + 1)
                 graph[node].append(neighbor)
-                graph.setdefault(neighbor, []).append(node)  # Add reverse edge
+                graph.setdefault(neighbor, []).append(node)
 
             if cell & S:
                 neighbor = (row_idx + 1, col_idx)
                 graph[node].append(neighbor)
-                graph.setdefault(neighbor, []).append(node)  # Add reverse edge
+                graph.setdefault(neighbor, []).append(node)
 
-    # Final row
+
     state, row = step(state, finish=True)
     for col_idx, cell in enumerate(row):
         node = (height, col_idx)
@@ -112,8 +112,7 @@ def generate(width, height, seed=None):
         if cell & E:
             neighbor = (height, col_idx + 1)
             graph[node].append(neighbor)
-            graph.setdefault(neighbor, []).append(node)  # Add reverse edge
-
+            graph.setdefault(neighbor, []).append(node)
     return graph, seed
 
 
@@ -126,21 +125,20 @@ def print_labyrinth(graph, width, height):
         for x in range(width):
             cell = (y, x)
             cell_row, cell_col = 2 * y + 1, 2 * x + 1
-            maze[cell_row][cell_col] = ' '  # Cell itself
+            maze[cell_row][cell_col] = ' '
 
             for ny, nx in graph.get(cell, []):
-                if ny == y and nx == x + 1:  # right
+                if ny == y and nx == x + 1:
                     maze[cell_row][cell_col + 1] = ' '
-                elif ny == y and nx == x - 1:  # left
+                elif ny == y and nx == x - 1:
                     maze[cell_row][cell_col - 1] = ' '
-                elif ny == y + 1 and nx == x:  # down
+                elif ny == y + 1 and nx == x:
                     maze[cell_row + 1][cell_col] = ' '
-                elif ny == y - 1 and nx == x:  # up
+                elif ny == y - 1 and nx == x:
                     maze[cell_row - 1][cell_col] = ' '
 
-    # Add entrance and exit
-    maze[1][0] = ' '  # entrance
-    maze[2 * height - 1][2 * width] = ' '  # exit
+    maze[1][0] = ' '
+    maze[2 * height - 1][2 * width] = ' '
 
     for row in maze:
         print("".join(row))
@@ -172,10 +170,9 @@ def print_path_on_maze(graph, path, width, height):
                 elif ny == y - 1 and nx == x:
                     maze[cell_row - 1][cell_col] = ' '
 
-    maze[1][0] = ' '  # entrance
-    maze[2 * height - 1][2 * width] = ' '  # exit
+    maze[1][0] = ' '
+    maze[2 * height - 1][2 * width] = ' '
 
-    # Draw the path
     for y, x in path:
         maze[2 * y + 1][2 * x + 1] = '.'
 
