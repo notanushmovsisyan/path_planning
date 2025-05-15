@@ -2,13 +2,13 @@ import random
 import time
 import matplotlib.pyplot as plt
 import numpy as np
-from collections import deque
 from path_finder import *
 
 
-def simulate_lidar(robot_pos, graph, noise_std=0.1):
+def simulate_lidar(robot_pos, graph, noise_std=0.0):
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  
     visible = {}
+  
     for dy, dx in directions:
         ny, nx = robot_pos[0] + dy, robot_pos[1] + dx
         if (ny, nx) in graph.get(robot_pos, []):
@@ -42,13 +42,6 @@ def draw_map(robot_map, robot_pos, width, height):
     plt.clf()
 
 
-def next_forward(robot_pos, graph):
-    for neighbor in graph.get(robot_pos, []):
-        if neighbor == (robot_pos[0], robot_pos[1] + 1):
-            return neighbor
-    return None
-
-
 def explore_with_lidar(graph, width, height):
     robot_pos = (0, 0)
     goal = (height - 1, width - 1)
@@ -75,11 +68,6 @@ def explore_with_lidar(graph, width, height):
 
         draw_map(robot_map, robot_pos, width, height)
 
-        next_step = next_forward(robot_pos, robot_map)
-        if next_step:
-            robot_pos = next_step
-            continue 
-
         if robot_pos == goal:
             print("Reached goal!")
             break
@@ -89,11 +77,15 @@ def explore_with_lidar(graph, width, height):
             break
 
         reachable_frontier = []
+        new_frontier = []
 
         for target in frontier:
             path = pathfinder_algo(robot_map, robot_pos, target)
             if path:
                 reachable_frontier.append((len(path), path, target))
+                new_frontier.append(target)
+
+        frontier = new_frontier
 
         if reachable_frontier:
             reachable_frontier.sort()
@@ -108,4 +100,3 @@ def explore_with_lidar(graph, width, height):
             break
 
     plt.close()
-
